@@ -1,0 +1,157 @@
+<html>
+<head>
+	<title>Javascript Ticking Colour Clock</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+	<script type="text/javascript">
+	// set colour functions
+	function setColour(seconds)
+	{
+		var saturation = parseInt($("#saturation_val").text()); // 0-255 for rgb values
+		var minstep = saturation/60;
+		
+		/*
+			tried hsl, jQuery animation does not support this property yet
+			@data 22.04.2011
+			
+		var hue = Math.round((60/seconds) * 255);
+		var hsl = "hsl("+hue+",50%,100%)";
+
+		$("body").animate({backgroundColor: "rgb("+r+","+g+","+b+")"}, 500); 
+		
+		*/
+		
+		/*
+			RGB Method
+			----------
+			
+			Stages to cycle through
+			rgb(sat,0,0)
+			rgb(sat,sat,0)
+			rgb(0,sat,0)
+			rgb(0,sat,sat)
+			rgb(0,0,sat)
+			rgb(sat,0,sat)
+			
+			therefore should take 10 seconds to reach each
+			stage there one sec per r or g or b is minstep times 6
+		
+		*/
+		
+		var secstep = minstep * 6;
+		
+		var r,g,b = 0;
+		
+		if(seconds <= 10)
+		{
+			r = saturation;
+			g = seconds*secstep;
+			b = 0;
+		}
+		else if( seconds <= 20)
+		{
+			r = saturation - ((seconds - 10) * secstep);
+			g = saturation;
+			b = 0;
+		}
+		else if(seconds <= 30)
+		{
+			r = 0;
+			g = saturation;
+			b = (seconds - 20) * secstep;
+		}
+		else if(seconds <= 40)
+		{
+			r = 0
+			g = saturation - ((seconds - 30) * secstep);
+			b = saturation;
+		}
+		else if(seconds <= 50)
+		{
+			r = (seconds - 40) * secstep;
+			g = 0;
+			b = saturation;
+		}
+		else if(seconds < 60)
+		{
+			r = saturation;
+			g = 0;
+			b = saturation - ((seconds - 50) * secstep);
+		}
+		
+		r = Math.round(r);
+		g = Math.round(g);
+		b = Math.round(b);
+		
+		$("body").animate({backgroundColor: "rgb("+r+","+g+","+b+")"}, 500); 
+		
+		
+	}
+	
+	function startClock()
+	{
+		var time = new Date();
+		
+		var hours = time.getHours();
+		var minutes = time.getMinutes();
+		var seconds = time.getSeconds();
+		var str_seconds = seconds;
+		
+		if(hours < 10)
+		{
+			hours = "0"+hours;
+		}
+		
+		if(minutes < 10)
+		{
+			minutes = "0"+minutes;
+		}
+		
+		if(seconds < 10)
+		{
+			str_seconds = "0"+str_seconds;
+		}
+		
+		var string = hours+":"+minutes+":"+str_seconds;
+		
+		$("#thetime").html(string);
+		setColour(seconds);
+	}
+	
+	$(document).ready(function()
+	{
+		$("#slider").slider({
+			value: 170,
+			min: 10,
+			max: 255,
+			steps: 1,
+			slide: function(event,ui)
+			{
+				$("#saturation_val").text(ui.value);
+			}
+		});
+
+		setInterval('startClock()',500);
+	});
+	
+	
+	</script>
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.8/themes/base/jquery-ui.css" type="text/css" media="all" /> 
+	<style type="text/css">
+		body { background: #000; text-align: center; padding-top: 200px;  font-family: Helvetica, Arial, sans-serif; color: #fff; }
+		#thetime {font-size: 100px; font-weight: bold;}
+		div#slider_holder { width: 400px; margin: 0 auto 30px; }
+	</style>
+</head>
+<body>
+	<div id="slider_holder">
+		Maximum Colour Value (RGB): <span id="saturation_val">170</span>
+		<div id="slider">
+		
+		</div>
+	</div>
+	<div id="thetime">
+	
+	</div>
+</body>
+</html>
